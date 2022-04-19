@@ -117,7 +117,7 @@
               <card
                 @addCart="addCart"
                 v-bind:anuncio="card"
-                v-bind:carrito="carrito"
+                v-bind:carrito="carrito"                
               ></card>
             </div>
           </div>
@@ -170,7 +170,7 @@
 </template>
 
 <script>
-import { db } from "../db";
+import { db, storage } from "../db";
 import Navbar from "../components/Navbar.vue";
 import NuevoAnuncio from "../components/NuevoAnuncio.vue";
 import Card from "../components/Card.vue";
@@ -219,6 +219,7 @@ export default {
       marcasSelected: [],
       sistemas: ["android", "windows", "ios"],
       sistemasSelected: [],
+      imagen: "",
     };
   },
 
@@ -327,14 +328,15 @@ export default {
             this.anunciosCopy.sort((a, b) => {
               return b.precio - a.precio;
             });
-            this.paginatedItems = this.anunciosCopy.slice(0, 5);
-            if (this.$route.params.cadena) {              
+            // this.paginatedItems = this.anunciosCopy.slice(0, 5);
+            this.dataPerPage(1);
+            if (this.$route.params.cadena) {
               this.buscar(this.$route.params.cadena);
             }
           });
         });
       // this.anunciosCopy = this.anuncios;
-      this.paginatedItems = this.anunciosCopy;
+      // this.paginatedItems = this.anunciosCopy;
     },
 
     save() {
@@ -364,7 +366,6 @@ export default {
 
       if (this.carrito.length === 0) {
         this.carrito.push(item);
-        // console.log(this.carrito);
         this.showToast("info");
       } else {
         while (contador < this.carrito.length && incluye === false) {
@@ -404,7 +405,7 @@ export default {
     },
 
     buscar(cadena) {
-      if (cadena.length > 0) {        
+      if (cadena.length > 0) {
         this.anunciosCopy = this.AnunciosFiltrados.filter((item) => {
           let x = item.titulo.toLowerCase().match(cadena.toLowerCase());
           return x;
@@ -413,7 +414,7 @@ export default {
           this.order(this.orderBy, true);
         }
       } else {
-        this.anunciosCopy = this.AnunciosFiltrados.slice();        
+        this.anunciosCopy = this.AnunciosFiltrados.slice();
         this.order(this.orderBy, true);
       }
     },
@@ -423,6 +424,11 @@ export default {
     },
 
     dataPerPage(numPagina = this.totalPaginas()) {
+      let ref;
+      // let _this = this;
+      let carpeta;
+      let copia = this.anunciosCopy.slice();
+
       if (numPagina > this.totalPaginas()) {
         numPagina = this.totalPaginas();
       }
@@ -433,8 +439,31 @@ export default {
       if (this.anunciosCopy.length < fin) {
         fin = this.anunciosCopy.length;
       }
+
+      for (let index = 0; index < copia.length; index++) {
+        carpeta = storage.ref().child(copia[index].idAnuncio.toString());
+        carpeta.listAll().then((res) => {
+          ref = storage.ref(res.items[0].fullPath);
+          ref.getDownloadURL().then((url) => {
+            copia[index].imagen = url            
+          });
+        });
+      }
+
       for (let index = inicio; index < fin; index++) {
-        this.paginatedItems.push(this.anunciosCopy[index]);
+        this.paginatedItems.push(copia[index]);
+        // for (let index = 0; index < this.paginatedItems.length; index++) {
+        //   carpeta = storage
+        //     .ref()
+        //     .child(this.paginatedItems[index].idAnuncio.toString());
+        //   carpeta.listAll().then((res) => {
+        //     ref = storage.ref(res.items[0].fullPath);
+        //     ref.getDownloadURL().then((url) => {
+        //       _this.paginatedItems[index].imagen = url;
+        //       // console.log(_this.paginatedItems[index])
+        //     });
+        //   });
+        // }
       }
       var top = this.$refs["top"].offsetTop;
       window.scrollTo(0, top);

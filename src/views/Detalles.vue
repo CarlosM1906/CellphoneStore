@@ -4,7 +4,7 @@
     <navbar
       @show="showModal"
       v-bind:carrito="$route.params.carrito"
-      @buscar='buscar'
+      @buscar="buscar"
       class="fixed-top"
       id="top"
       ref="top"
@@ -23,6 +23,7 @@
 
     <!-- INFORMACION -->
     <anuncio
+      v-bind:carrito="$route.params.carrito"
       v-bind:imagenes="imagenes"
       v-bind:anuncio="$route.params.anuncio"
       @showToast="showToast"
@@ -71,7 +72,7 @@ export default {
   mounted() {
     this.getImages();
     // console.log(this.$route.params.carrito);
-    this.carrito = this.$route.params.carrito;    
+    this.carrito = this.$route.params.carrito;
   },
 
   methods: {
@@ -100,8 +101,11 @@ export default {
       });
     },
 
-    buscar(cadena){
-      this.$router.push({name: 'Home', params: {carrito: this.$route.params.carrito, cadena: cadena}})
+    buscar(cadena) {
+      this.$router.push({
+        name: "Home",
+        params: { carrito: this.$route.params.carrito, cadena: cadena },
+      });
     },
 
     addCart(anuncio) {

@@ -480,8 +480,7 @@ export default {
     openUpload() {
       document.getElementById("formFile").click();
     },
-    selectImages(event) {
-      console.log('Entre a seleccionar imagenes')      
+    selectImages(event) {      
       let reader = new FileReader();
       let _this = this;
 
@@ -507,8 +506,7 @@ export default {
       db.collection('anuncios').add(this.nuevoAnuncio)      
       for (let index = 0; index < this.upImages.length; index++ ) {        
         archivo = storage.ref(`${this.nuevoAnuncio.idAnuncio.toString()}/${this.upImages[index].name}`)
-        archivo.put(this.upImages[index]).then(() => {
-          console.log('Archivo subido')
+        archivo.put(this.upImages[index]).then(() => {          
         })        
       }
       this.previewImages = []

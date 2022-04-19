@@ -5,7 +5,7 @@
         <b-col md="9" class="order-2 order-md-1" style="text-align: left">
           <div class="card-body order-2">
             <router-link
-              :to="{ name: 'Detalles', params: { anuncio: anuncio.idAnuncio, carrito: carrito } }"
+              :to="{ name: 'Detalles', params: { anuncio: anuncio.idAnuncio, carrito: carrito, } }"
               style="color: black"
             >
               <h2 class="card-title mb-1">{{ anuncio.titulo }}</h2>
@@ -35,9 +35,9 @@
 
         <b-col md="3" class="ml-auto order-1 order-md-2 my-auto">
           <router-link
-            :to="{ name: 'Detalles', params: { anuncio: anuncio.idAnuncio, carrito: carrito } }"
+            :to="{ name: 'Detalles', params: { anuncio: anuncio.idAnuncio, carrito: carrito} }"
           >
-            <b-card-img :src="url" alt="Image" class="rounded-0"></b-card-img>
+            <b-card-img :src="anuncio.imagen == undefined ? url : anuncio.imagen" alt="Image" class="rounded-0"></b-card-img>
           </router-link>
         </b-col>
       </b-row>
@@ -52,28 +52,29 @@ export default {
   props: ["anuncio", "carrito"],
   data() {
     return {
-      url: null,
+      url: '',    
     };
   },
 
-  mounted() {    
+  mounted() {        
+    this.item = this.anuncio
     let ref;
     let _this = this;
-    let carpeta = storage.ref().child(this.anuncio.idAnuncio.toString());
-    carpeta.listAll().then((res) => {
+    let carpeta = storage.ref().child(this.anuncio.idAnuncio.toString());        
+    carpeta.listAll().then((res) => {      
       ref = storage.ref(res.items[0].fullPath);
       ref.getDownloadURL().then((url) => {
         _this.url = url;
-        // _this.anuncio.imagen = this.url;
+        _this.anuncio.imagen = this.url;
       });
-    });
+    });    
     // console.log(this.anuncio);
   },
 
+
   methods: {
     agregar() {
-      // this.$emit("toast", "info");      
-      this.anuncio.imagen = this.url;
+      // this.$emit("toast", "info");            
       this.$emit('addCart', this.anuncio);
     },
   },

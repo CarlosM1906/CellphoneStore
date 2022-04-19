@@ -128,13 +128,13 @@
         <!-- BOTONES -->
         <div class="row d-md-none fixed-bottom" id="comprarFixed">
           <div class="col text-center fixed-bottom">
-            <router-link to="/" class="btn btn-dark mr-2 mb-2 btn-lg">
+            <router-link :to="{ name: 'Home', params: { carrito: carrito} }" class="btn btn-dark mr-2 mb-2 btn-lg">
               <font-awesome-icon :icon="['fas', 'home']" /> Inicio
             </router-link>
             <a
               class="btn btn-danger mb-2 btn-lg"
               style="background-color: #ff7402"
-              @click="showToast()"
+              @click="addCart"
             >
               <font-awesome-icon :icon="['fas', 'cart-plus']" /> Carrito
             </a>
@@ -150,7 +150,7 @@
 import { db } from "../db";
 export default {
   name: "Anuncio",
-  props: ["imagenes", "anuncio"],
+  props: ["imagenes", "anuncio", "carrito"],
   data() {
     return {
       anuncioActual: {},
